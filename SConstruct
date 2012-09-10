@@ -1,0 +1,1 @@
+SConscript('SConscript', variant_dir='build-dbg', duplicate=0, exports={'MODE':'debug'})

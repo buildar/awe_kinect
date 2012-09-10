@@ -1,0 +1,52 @@
+<html>
+	<head>
+		<title>awe_kinect</title>
+    
+      
+
+	  
+	</head>
+	<body>
+		<h3>status</h3>
+		<ul id="ul_status">
+		</ul>
+		<h3>messages</h3>
+		<ul id="ul_msg">
+		</ul>
+		<pre id="skel">
+		</pre>
+
+	<script>
+      	function get_ws_url() {
+		var protocol = "ws://"
+	  	var u = document.URL.substring(7);
+	  	u = u.split("/");
+	  	return protocol + u[0];
+	}
+
+	function ul_append(id, txt) {
+		var ul = document.getElementById(id);
+		var new_li = document.createElement('li');
+		new_li.innerHTML = txt;
+		ul.insertBefore(new_li, null);
+	}
+      
+	var ak_sock = new WebSocket(get_ws_url(), "skeleton-data");
+	try {
+		ak_sock.onopen = function() {
+			ul_append("ul_status", "Connection established.");
+		}
+		ak_sock.onmessage = function got_packet(msg) {
+			//ul_append("ul_msg", "Server says: " + msg.data);
+		      document.getElementById('skel').innerHTML = msg.data;
+		}
+		ak_sock.onclose = function() {
+			ul_append("ul_status", "Connection closed.");
+		}
+		} catch(exception) {
+		alert("Error: " + exception);
+	}
+
+	</script>
+	</body>
+</html>
