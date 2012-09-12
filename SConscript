@@ -8,6 +8,7 @@ env.Append(LIBS=['OpenNI','websockets','glog'])
 env.Append(CPPPATH='-I/usr/include/ni')
 sources = Split("""
 constants.cpp
+dump_writer.cpp
 options.cpp
 util.cpp
 position.cpp

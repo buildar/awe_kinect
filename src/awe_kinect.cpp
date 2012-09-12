@@ -1,5 +1,6 @@
 #include <iostream>
 #include <sstream>
+#include <fstream>
 
 #include <XnCppWrapper.h>
 #include <libwebsockets.h>
@@ -9,7 +10,9 @@
 #include "rapidjson/stringbuffer.h"
 
 #include "ezOptionParser.hpp"
+
 #include "constants.h"
+#include "dump_writer.h"
 #include "options.h"
 #include "skeleton.h"
 #include "position.h"
@@ -98,6 +101,7 @@ int main(int argc, const char **argv) {
 	XnUInt16 nusers = kMaxUsers;
 	SkeletonFrame *skel;
 	XnChar str_pose[20];
+	DumpWriter *dump_writer;
 	struct libwebsocket_context* ws_context;
 
 	XnSkeletonJointTransformation joint;
@@ -116,6 +120,14 @@ int main(int argc, const char **argv) {
 
 	op.get("-p")->getInt(ws_port);
 	op.get("-f")->getInt(update_freq);
+	if (op.isSet("-d")) {
+		std::string dump_path;
+		op.get("-d")->getString(dump_path);
+		dump_writer = new DumpWriter(dump_path);
+	}
+	else {
+		dump_writer = NULL;
+	}
 	ws_context = init_ws_context(ws_port);
 	ret = context.InitFromXmlFile("config.xml", script_node, &errors);
 	if (ret != XN_STATUS_OK) {
@@ -164,11 +176,15 @@ int main(int argc, const char **argv) {
 		// If there are actions waiting, render and broadcaset them
 		while (g_skel_tracker.ActionsWaiting()) {
 			sjr_json = g_skel_tracker.RenderAction();
+			if (dump_writer)
+				dump_writer->WriteData(sjr_json);
 			ws_skeleton_broadcast(sjr_json, sjr_buf);
 			
 		}
 		// Broadcast skeleton update
 		sjr_json = g_skel_tracker.RenderUpdate();
+		if (dump_writer)
+			dump_writer->WriteData(sjr_json);
 		ws_skeleton_broadcast(sjr_json, sjr_buf);
 		ws_serve(ws_context);
 		sleep_hz(update_freq);
