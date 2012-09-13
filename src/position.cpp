@@ -1,4 +1,5 @@
 #include <sstream>
+#include <iostream>
 
 #include "position.h"
 
@@ -18,17 +19,19 @@ Position::Position() {
 }
 
 void Position::WriteJson(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer) {
-	std::stringstream ss;
+	std::stringstream x;
+	std::stringstream y;
+	std::stringstream z;
 	writer.StartObject();
 	writer.String("x");
-	ss << this->x;
-	writer.String(ss.str().c_str());
-	ss << this->y;
+	x << this->x;
+	writer.String(x.str().c_str());
+	y << this->y;
 	writer.String("y");
-	writer.String(ss.str().c_str());
-	ss << this->z;
+	writer.String(y.str().c_str());
+	z << this->z;
 	writer.String("z");
-	writer.String(ss.str().c_str());
+	writer.String(z.str().c_str());
 	writer.EndObject();
 }
 
