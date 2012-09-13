@@ -5,6 +5,7 @@ env = Environment()
 if MODE == 'debug':
     env.Append(CPPFLAGS='-g')
 env.Append(LIBS=['OpenNI','websockets','glog'])
+env.Append(LIBPATH='-L/usr/local/lib')
 env.Append(CPPPATH='-I/usr/include/ni')
 sources = Split("""
 constants.cpp
